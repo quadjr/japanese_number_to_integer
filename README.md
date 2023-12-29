@@ -19,6 +19,15 @@ python3 japanese_number_to_integer.py 三万五千一
 ---
 #### コマンド例
 ```
+python3 japanese_number_to_integer.py 30000百万
+```
+結果表示
+```
+30000000000
+```
+---
+#### コマンド例
+```
 python3 japanese_number_to_integer.py 七十無量大数七百不可思議五千那由他一阿僧祇七千三百三十三恒河沙
 ```
 結果表示
