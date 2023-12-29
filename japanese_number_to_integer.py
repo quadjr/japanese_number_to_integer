@@ -37,17 +37,18 @@ def japanese_number_to_integer(num):
         ['[千仟阡]', 1000],
     ]
 
-    # 正規表現文字列の生成
+    # 正規表現文字列の生成（下の桁からマッチングを行うことで桁上りや省略表記に対応）
     match_str = ''
     digits_join = ''.join(digits.keys())
     for base, _ in digits_base:
         base_key = re.sub('[\(\)\[\]]', '', base)
         for sub_base, _ in digits_sub_base:
             sub_base_key = re.sub('[\(\)\[\]]', '', sub_base)
-            if sub_base == '':
-                match_str += '(?P<b' + base_key + '>' + base + '?)' if base_key != '' else ''
-            else:
+            if sub_base != '': # 十百千の表記
                 match_str += '(?P<b' + sub_base_key + base_key + '>' + sub_base + '?)'
+            elif base_key != '': # 万億兆の表記
+                match_str += '(?P<b' + base_key + '>' + base + '?)'
+            # 数字の表記
             match_str += '(?P<d' + sub_base_key + base_key + '>[' + digits_join + ']?)'
 
     # 正規表現処理（漢数字文字列を逆順にしてマッチング処理）
@@ -62,9 +63,10 @@ def japanese_number_to_integer(num):
         for sub_base, sub_value in digits_sub_base:
             sub_base_key = re.sub('[\(\)\[\]]', '', sub_base)
             d = match.group('d' + sub_base_key + base_key)
-            res += digits[d] * sub_value * base_value
-            if sub_base != '':
-                res += sub_value * base_value if d == '' and match.group('b' + sub_base_key + base_key) != '' else 0
+            if d != '': # 数字表記
+                res += digits[d] * sub_value * base_value
+            elif sub_base != '' and match.group('b' + sub_base_key + base_key) != '': # 十百千の単独表記
+                res += sub_value * base_value
 
     return res
 
